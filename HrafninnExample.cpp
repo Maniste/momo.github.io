@@ -29,37 +29,6 @@ void UASoulFollowTargetComponent::BeginPlay()
 	tempSpawnSwayPos = this->GetOwner()->GetActorLocation();
 }
 
-/*
-void UASoulFollowTargetComponent::LineTrace()
-{
-	FVector startLoc = this->GetOwner()->GetActorLocation();
-	FVector endLoc = targetLocation;
-
-	FHitResult lineHits;
-	FCollisionQueryParams lineParams;
-
-	GetWorld()->LineTraceSingleByChannel(lineHits, startLoc, endLoc, ECC_Visibility, lineParams);
-	//DrawDebugLine(GetWorld(), startLoc, endLoc, FColor::Red, false, 2.0f);
-
-	float lineDistance = this->GetOwner()->GetDistanceTo(TargetFollow);
-	lineDistance = FMath::Clamp(lineDistance, 0.5f, 8.0f);
-
-
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::SanitizeFloat(lineDistance));
-	//Acceleration(lineDistance);
-
-}
-
-
-void UASoulFollowTargetComponent::RotationCorrection(FVector vector1, FVector vector2)
-{
-	playerDirection = TargetFollow->GetActorRotation().Yaw;
-	//playerDirection = FVector::DotProduct(vector1, vector2);
-	//playerDirection = FMath::Clamp(playerDirection, -1.0f, 1.0f);
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::SanitizeFloat(playerDirection));
-}
-*/
-
 void UASoulFollowTargetComponent::MoveOrb()
 {
 	if (TargetFollow) {
@@ -94,7 +63,6 @@ void UASoulFollowTargetComponent::OrbVerticalSway()
 			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("up"));
 			currentDistanceFromPlayerZ = FMath::FInterpTo(currentDistanceFromPlayerZ, tempSpawnSwayPos.Z + orbUpSwayHeight, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed / 2);
 			wishPos = FMath::VInterpConstantTo(currentPos, targetVector, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed / 2);
-			//wishPos = FMath::VInterpTo(currentPos, targetVector, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed / 2);
 			if (wishPos.Z >= tempSpawnSwayPos.Z + orbUpSwayHeight)
 				bGoUp = false;
 		}
@@ -103,7 +71,6 @@ void UASoulFollowTargetComponent::OrbVerticalSway()
 			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("down"));
 			currentDistanceFromPlayerZ = FMath::FInterpTo(currentDistanceFromPlayerZ, -tempSpawnSwayPos.Z, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed / 2);
 			wishPos = FMath::VInterpConstantTo(currentPos, targetVector, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed / 2);
-			//wishPos = FMath::VInterpTo(currentPos, targetVector, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed / 2);
 			if (wishPos.Z <= tempSpawnSwayPos.Z)
 				bGoUp = true;
 		}
@@ -112,10 +79,7 @@ void UASoulFollowTargetComponent::OrbVerticalSway()
 		else {
 			if (bGoUp) {
 				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("up"));
-
-				// currentDistanceFromPlayerZ = FMath::FInterpTo(currentDistanceFromPlayerZ, distanceFromPlayerZ + orbUpSwayHeight, GetWorld()->DeltaTimeSeconds * 2.0f, orbUpSwaySpeed);
 				currentDistanceFromPlayerZ = FMath::FInterpConstantTo(currentDistanceFromPlayerZ, distanceFromPlayerZ + orbUpSwayHeight, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed);
-				// currentDistanceFromPlayerZ = FMath::Lerp(currentDistanceFromPlayerZ, distanceFromPlayerZ + orbUpSwayHeight, orbUpSwaySpeed);
 
 				if (currentDistanceFromPlayerZ >= distanceFromPlayerZ + orbUpSwayHeight) {
 					bGoUp = false;
@@ -123,11 +87,8 @@ void UASoulFollowTargetComponent::OrbVerticalSway()
 
 			}
 			else if (!bGoUp) {
-				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("down"));
-
-				//currentDistanceFromPlayerZ = FMath::FInterpTo(currentDistanceFromPlayerZ, distanceFromPlayerZ - orbUpSwayHeight, GetWorld()->DeltaTimeSeconds * 2.0f, orbUpSwaySpeed);
+				//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Purple, TEXT("down"));			
 				currentDistanceFromPlayerZ = FMath::FInterpConstantTo(currentDistanceFromPlayerZ, distanceFromPlayerZ - orbUpSwayHeight, GetWorld()->DeltaTimeSeconds, orbUpSwaySpeed);
-				//currentDistanceFromPlayerZ = FMath::Lerp(currentDistanceFromPlayerZ, distanceFromPlayerZ - orbUpSwayHeight, orbUpSwaySpeed);
 
 				if (currentDistanceFromPlayerZ <= distanceFromPlayerZ - orbUpSwayHeight) {
 					bGoUp = true;
@@ -168,24 +129,7 @@ void UASoulFollowTargetComponent::SetUp(AActor* followActor)
 
 void UASoulFollowTargetComponent::SoulTurnedIn_Implementation(AActor* lanternActor)
 {
-	isOrbActive = false;
-/*	if (lanternActor == nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, TEXT("Monkey Flip"));
-	}
-	
-	FTimerHandle delayTimer;
-	FVector lantLoc = lanternActor->GetActorLocation();
-
-	tempLoc = FMath::VInterpConstantTo(tempLoc, lantLoc, GetWorld()->DeltaTimeSeconds, 1.0f);
-	this->GetOwner()->SetActorLocation(tempLoc);
-	GetWorld()->GetTimerManager().SetTimer(delayTimer, this, &UASoulFollowTargetComponent::DestroyObj,1.0f);
-*/	
-}
-
-void UASoulFollowTargetComponent::DestroyObj()
-{
-	//this->GetOwner()->Destroy(false, false);
+	isOrbActive = false;	
 }
 
 // Called every frame
@@ -194,9 +138,7 @@ void UASoulFollowTargetComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	OrbVerticalSway(); 
 	if (isOrbActive) {
-		//LineTrace();
 		MoveOrb();
-		//OrbVerticalSway();
 	}
 }
 
